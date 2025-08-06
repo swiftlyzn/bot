@@ -100,11 +100,22 @@ class VersionBot(discord.Client):
             with open(config_file, "w") as file:
                 json.dump(server_configs, file)
 
+    def read_old_win_version(self):
+        if os.path.exists("last_win_version.txt"):
+            with open("last_win_version.txt", "r") as f:
+                return f.read().strip()
+        return None
+
+    def write_old_win_version(self,version):
+        with open("last_win_version.txt", "w") as f:
+            f.write(version)
+    
     async def check_versions(self):
         await self.wait_until_ready()
 
         while not self.is_closed():
             try:
+                old_win =  self.read_old_win_version()
                 async with aiohttp.ClientSession() as session:
                     async with session.get("https://weao.xyz/api/versions/current") as resp:
                         win_data = await resp.json()
@@ -112,7 +123,7 @@ class VersionBot(discord.Client):
                     win_version = win_data.get("Windows")
                     win_time = win_data.get("WindowsDate")
 
-                    if win_version != self.old_win:
+                    if win_version != old_win:
                         embed = discord.Embed(
                             title="🚨 **Roblox Update** 🚨",
                             description="Đây là thông tin mới nhất về các phiên bản roblox cập nhật.",
@@ -122,7 +133,7 @@ class VersionBot(discord.Client):
                         embed.add_field(name="Thời gian cập nhật", value=f"```{win_time}```", inline=False)
                         embed.add_field(
                             name="Tải về phiên bản mới",
-                            value=f"[Download](https://roblox.get-fusion.com/install?Version={win_version})",
+                            value=f"[Download](https://rdd.whatexpsare.online/?channel=LIVE&binaryType=WindowsPlayer&version={win_version})",
                             inline=False
                         )
                         embed.add_field(name="📌 Lưu ý", value="Nên sử dụng Roblox TNG để có thể dùng TNG mà không lỗi Version.", inline=False)
@@ -140,9 +151,9 @@ class VersionBot(discord.Client):
                                     await channel.send(content=f"<@&{role.id}>", embed=embed)
 
                         print(f"📤 {win_version}")
-                        self.old_win = win_version
+                        self.write_old_win_version(win_version)
                     else:
-                        print(f"✅ {self.old_win}.")
+                        print(f"✅ {old_win}.")
             except Exception as e:
                 print(f"⚠️ Lỗi khi kiểm tra: {e}")
 
