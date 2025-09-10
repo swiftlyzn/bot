@@ -117,11 +117,12 @@ class VersionBot(discord.Client):
             try:
                 old_win =  self.read_old_win_version()
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("https://whatexpsare.online/api/versions/current") as resp:
+                    async with session.get("https://clientsettingscdn.roblox.com/v2/client-version/WindowsPlayer") as resp:
                         win_data = await resp.json()
 
-                    win_version = win_data.get("Windows")
-                    win_time = win_data.get("WindowsDate")
+                    win_version = win_data.get("clientVersionUpload")
+                    vietnam_tz = datetime.timezone(datetime.timedelta(hours=7))
+                    win_time = datetime.datetime.now(vietnam_tz).strftime("%Y-%m-%d %H:%M:%S")
 
                     if win_version != old_win:
                         embed = discord.Embed(
