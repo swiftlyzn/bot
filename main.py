@@ -117,7 +117,7 @@ class VersionBot(discord.Client):
             try:
                 old_win =  self.read_old_win_version()
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("https://weao.xyz/api/versions/current") as resp:
+                    async with session.get("https://whatexpsare.online/api/versions/current") as resp:
                         win_data = await resp.json()
 
                     win_version = win_data.get("Windows")
